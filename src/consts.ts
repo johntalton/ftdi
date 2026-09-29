@@ -12,13 +12,13 @@ const _REQUESTS = {
 	GET_LATENCY_TIMER: 0x0A,
 	SET_BITMODE: 0x0B,
 	READ_PINS: 0x0C,
-	// READ_EEPROM: 0x90,
-	// WRITE_EEPROM: 0x91,
+	READ_EEPROM: 0x90,
+	WRITE_EEPROM: 0x91,
 	// ERASE_EEPROM: 0x92,
 } as const
 
 export type RequestKeys = keyof typeof _REQUESTS
-export type RequestType = number
+export type RequestType = typeof _REQUESTS[keyof typeof _REQUESTS]
 export const REQUESTS: Record<RequestKeys, RequestType> = _REQUESTS
 
 

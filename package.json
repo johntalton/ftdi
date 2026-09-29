@@ -6,7 +6,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./i2c": "./lib/i2c/index.js",
-    "./mpsse": "./lib/mpsse/index.js"
+    "./mpsse": "./lib/mpsse/index.js",
+    "./eeprom": "./lib/eeprom.js"
   },
   "files": [
     "lib/**/*.js",

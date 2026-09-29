@@ -76,23 +76,23 @@ export class FT232H {
 		}
 	}
 
-	async #requestIn(request: RequestType, length: number): Promise<USBInTransferResult> {
+	async #requestIn(request: RequestType, length: number, index: number|undefined = undefined): Promise<USBInTransferResult> {
 		return this.#device.controlTransferIn({
 			requestType: REQUEST_TYPE_VENDOR,
 			recipient: RECIPIENT_DEVICE,
 			request,
 			value: 0,
-			index: this.#interfaceNumber
+			index: index ?? this.#interfaceNumber
 		}, length)
 	}
 
-	async #requestOut(request: RequestType, value: number): Promise<USBOutTransferResult> {
+	async #requestOut(request: RequestType, value: number, index: number|undefined = undefined): Promise<USBOutTransferResult> {
 		return this.#device.controlTransferOut({
 			requestType: REQUEST_TYPE_VENDOR,
 			recipient: RECIPIENT_DEVICE,
 			request,
 			value,
-			index: this.#interfaceNumber
+			index: index ?? this.#interfaceNumber
 		})
 	}
 
@@ -188,4 +188,23 @@ export class FT232H {
 		assertDataViewNotShared(result.data)
 		return result.data
 	}
+
+	async readEEPROM(address: number, length: number): Promise<DataView<ArrayBuffer>> {
+		const result = await this.#requestIn(REQUESTS.READ_EEPROM, length, address)
+		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure to read eeprom') }
+		if(result.data === undefined) { throw new Error('result data undefined') }
+		assertDataViewNotShared(result.data)
+
+		return result.data
+	}
+
+	async writeEEPROM(address: number, value: number): Promise<number> {
+		const result = await this.#requestOut(REQUESTS.WRITE_EEPROM, value, address)
+		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure to read eeprom') }
+		return result.bytesWritten
+	}
+
+	// async eraseEEPROM(): Promise<void> {
+
+	// }
 }
