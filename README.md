@@ -1,22 +1,24 @@
-# FT232H
+# FTDI
 
-[![npm Version](http://img.shields.io/npm/v/@johntalton/ft232h.svg)](https://www.npmjs.com/package/@johntalton/ft232h)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/ft232h)
-[![CI](https://github.com/johntalton/ft232h/actions/workflows/CI.yml/badge.svg)](https://github.com/johntalton/ft232h/actions/workflows/CI.yml)
-![GitHub](https://img.shields.io/github/license/johntalton/ft232h)
-[![Downloads Per Month](http://img.shields.io/npm/dm/@johntalton/ft232h.svg)](https://www.npmjs.com/package/@johntalton/ft232h)
-![GitHub last commit](https://img.shields.io/github/last-commit/johntalton/ft232h)
+[![npm Version](http://img.shields.io/npm/v/@johntalton/ftdi.svg)](https://www.npmjs.com/package/@johntalton/ftdi)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/ftdi)
+[![CI](https://github.com/johntalton/ftdi/actions/workflows/CI.yml/badge.svg)](https://github.com/johntalton/ftdi/actions/workflows/CI.yml)
+![GitHub](https://img.shields.io/github/license/johntalton/ftdi)
+[![Downloads Per Month](http://img.shields.io/npm/dm/@johntalton/ftdi.svg)](https://www.npmjs.com/package/@johntalton/ftdi)
+![GitHub last commit](https://img.shields.io/github/last-commit/johntalton/ftdi)
 
-WebUSB based driver for FT232H chip
+WebUSB based driver for FTDI's chip
 
 Intended to provide I²C abstraction for compatibility with [I2CBus](https://github.com/johntalton/and-other-delights)
+
+The FT232H and FT232R chips have been used during testing, and while other chips should work, access to others is limited (if you wish to help support please consider device donations 🎁)
 
 ## Example
 
 Standard setup
 
 ```js
-import { FT232H, BIT_MODE } from '@johntalton/ft232h'
+import { FTDIDevice, BIT_MODE } from '@johntalton/ftdi'
 
 const usbDevice = // via navigator.usb.requestDevice
 
@@ -24,7 +26,7 @@ const usbDevice = // via navigator.usb.requestDevice
 await usbDevice.open()
 
 // chip form usb device
-const ftDevice = await FT232H.from(usbDevice)
+const ftDevice = await FTDIDevice.from(usbDevice)
 
 // using MPSSE
 await ftDevice.setBitMode(BIT_MODE.MPSSE)
@@ -33,7 +35,7 @@ await ftDevice.setBitMode(BIT_MODE.MPSSE)
 Blink LED via GPIO
 
 ```js
-import { PIN_STATE_COMMANDS } from '@johntalton/ft232h'
+import { PIN_STATE_COMMANDS } from '@johntalton/ftdi'
 
 // ...
 export const delayMs = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -58,10 +60,11 @@ await ftDevice.sendData(Uint8Array.from([
 
 
 
-Using it as a I²C bus
+Using it as a I²C bus.
+This uses the FT232H specific implementation as it support Drive Zero only and 3-Phase clocking that significantly reduces implementation complexity.
 
 ```js
-import { FT232HBus } from '@johntalton/ft232h/i2c'
+import { FT232HBus } from '@johntalton/ftdi/i2c'
 import { I2CAddressedBus } from '@johntalton/and-other-delights'
 import { ADT7410 } from '@johntalton/adt7410'
 

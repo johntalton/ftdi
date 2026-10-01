@@ -1,5 +1,13 @@
 
-const _REQUESTS = {
+export const DEFAULT_FT4232H_PRODUCT_ID = 0x60_11
+export const DEFAULT_FT2232H_PRODUCT_ID = 0x60_10
+export const DEFAULT_FT232H_PRODUCT_ID = 0x60_14
+export const DEFAULT_FT232R_PRODUCT_ID = 0x60_01
+export const DEFAULT_FTDI_VENDOR_ID = 0x04_03
+
+
+//
+export const _REQUESTS = {
 	RESET: 0,
 	SET_MODEM_CTRL: 1,
 	// SET_FLOW_CTRL: 2,

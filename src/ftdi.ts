@@ -30,16 +30,16 @@ export function assertDataViewNotShared(view: DataView): asserts view is DataVie
 	}
 }
 
-export class FT232H {
+export class FTDIDevice {
 	readonly #device
 	readonly #endpointBulkIn: number
 	readonly #endpointBulkOut: number
 	readonly #interfaceNumber: number
 	readonly #mpsse: MPSSE
 
-	static async from(device: USBDevice): Promise<FT232H> {
-		const { interfaceNumber, epIn, epOut } = await FT232H.#discoverEndpoints(device)
-		return new FT232H(device, interfaceNumber, epIn, epOut)
+	static async from(device: USBDevice): Promise<FTDIDevice> {
+		const { interfaceNumber, epIn, epOut } = await FTDIDevice.#discoverEndpoints(device)
+		return new FTDIDevice(device, interfaceNumber, epIn, epOut)
 	}
 
 	constructor(device: USBDevice, interfaceNumber: number, epIn: number, epOut: number) {

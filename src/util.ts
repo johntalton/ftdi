@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/performance/noAwaitInLoops: <explanation> */
 /** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
-import type { FT232H } from "./ft232h.ts"
+import type { FTDIDevice } from "./ftdi.ts"
 import { STATUS_PREFIX_LENGTH } from "./status.ts"
 
 export interface ChipInfo {
@@ -57,7 +57,7 @@ export class Util {
 		return info
 	}
 
-	static async pollData(device: FT232H, attempts = DEFAULT_MAX_POLL_ATTEMPTS): Promise<Uint8Array<ArrayBuffer>> {
+	static async pollData(device: FTDIDevice, attempts = DEFAULT_MAX_POLL_ATTEMPTS): Promise<Uint8Array<ArrayBuffer>> {
 		for(let i = 0; i < attempts; i += 1) {
 			const response = await device.readData(DEFAULT_DATA_READ_SIZE)
 			if(response.byteLength === STATUS_PREFIX_LENGTH) { continue }

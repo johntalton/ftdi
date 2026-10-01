@@ -9,7 +9,7 @@ import type {
 	I2CReadResult,
 	I2CWriteResult
 } from '@johntalton/and-other-delights'
-import type { FT232H } from '../ft232h.ts'
+import type { FTDIDevice } from '../ftdi.ts'
 import { CLOCK_DEFAULT_STANDARD_MODE_100_kHz } from '../mpsse/clock.ts'
 import { DeviceStatus } from '../status.ts'
 import { DEFAULT_DATA_READ_SIZE, Util } from '../util.ts'
@@ -27,13 +27,13 @@ export function checkAck(data: Uint8Array<ArrayBuffer>): boolean {
 	return  (byte & 0b0000_0001) === 0
 }
 
-export async function sendAndReadACK(device: FT232H, transaction: Uint8Array<ArrayBuffer>): Promise<boolean> {
+export async function sendAndReadACK(device: FTDIDevice, transaction: Uint8Array<ArrayBuffer>): Promise<boolean> {
 	await device.sendData(transaction)
 	const response = await Util.pollData(device)
 	return checkAck(response)
 }
 
-export async function readData(device: FT232H, length: number, targetBuffer?: I2CBufferSource): Promise<I2CBufferSource> {
+export async function readData(device: FTDIDevice, length: number, targetBuffer?: I2CBufferSource): Promise<I2CBufferSource> {
 	const buffer = (targetBuffer === undefined) ?
 		new Uint8Array(length) :
 		(ArrayBuffer.isView(targetBuffer) ?
@@ -59,7 +59,7 @@ export async function readData(device: FT232H, length: number, targetBuffer?: I2
 	return buffer
 }
 
-export async function writeData(device: FT232H, length: number, buffer: I2CBufferSource): Promise<void> {
+export async function writeData(device: FTDIDevice, length: number, buffer: I2CBufferSource): Promise<void> {
 	const u8 = ArrayBuffer.isView(buffer) ?
 		new Uint8Array(buffer.buffer, buffer.byteOffset, length) :
 		new Uint8Array(buffer, 0, length)
@@ -83,9 +83,9 @@ export class FT232HBus implements I2CBus {
 	readonly supportsScan = true
 	readonly supportsMultiByteDataAddress = false
 
-	readonly #device: FT232H
+	readonly #device: FTDIDevice
 
-	static async init(device: FT232H, options?: FT232HBusOptions): Promise<void> {
+	static async init(device: FTDIDevice, options?: FT232HBusOptions): Promise<void> {
 		const transaction = I2CTemplate.initI2C(options?.targetClockHz ?? CLOCK_DEFAULT_STANDARD_MODE_100_kHz, options?.enableClockDivideBy5 ?? false)
 		await device.sendData(transaction)
 
@@ -95,7 +95,7 @@ export class FT232HBus implements I2CBus {
 		console.log('init status', status)
 	}
 
-	constructor(device: FT232H) {
+	constructor(device: FTDIDevice) {
 		this.#device = device
 	}
 

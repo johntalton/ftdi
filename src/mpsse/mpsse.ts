@@ -1,13 +1,13 @@
 /** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
-import type { FT232H } from '../ft232h.ts'
+import type { FTDIDevice } from '../ftdi.ts'
 import { Util } from '../util.ts'
 import { BAD_COMMAND, BAD_COMMAND_RESPONSE } from './command.ts'
 import { MPSSETemplate } from './mpsse-template.ts'
 
 export class MPSSE {
-	readonly #device: FT232H
+	readonly #device: FTDIDevice
 
-	constructor(device: FT232H) {
+	constructor(device: FTDIDevice) {
 		this.#device = device
 	}
 

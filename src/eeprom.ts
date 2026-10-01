@@ -3,7 +3,7 @@
 /** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: <explanation> */
 /** biome-ignore-all lint/style/useDestructuring: <explanation> */
-import type { FT232H } from './ft232h.ts'
+import type { FTDIDevice } from './ftdi.ts'
 import {
 	type ChipInfo,
 	USB_MAJOR_TYPE_232H,
@@ -220,10 +220,10 @@ export function eepromTypeOffset(chipInfo: ChipInfo): number|undefined {
 
 export class FTDIEEPROM {
 
-	static async readEEPROMBulk(driver: FT232H, eepromSize16: number): Promise<ArrayBufferView<ArrayBuffer>> {
+	static async readEEPROMBulk(device: FTDIDevice, eepromSize16: number): Promise<ArrayBufferView<ArrayBuffer>> {
 		const result16 = new Uint16Array(eepromSize16)
 		for(let i = 0; i < eepromSize16; i += 1) {
-			const result = await driver.readEEPROM(i, 2)
+			const result = await device.readEEPROM(i, 2)
 			result16.set([result.getUint16(0, true)], i)
 		}
 
