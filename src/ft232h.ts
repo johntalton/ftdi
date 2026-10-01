@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/style/noNestedTernary: <explanation> */
 import type { BitMode, ModemControl, RequestType } from './consts.ts'
 import { REQUESTS, RESET_USB } from './consts.ts'
+import { MPSSE } from './mpsse/mpsse.ts'
 import {
 	DeviceStatus,
 	type DeviceStatusInfo,
@@ -34,6 +35,7 @@ export class FT232H {
 	readonly #endpointBulkIn: number
 	readonly #endpointBulkOut: number
 	readonly #interfaceNumber: number
+	readonly #mpsse: MPSSE
 
 	static async from(device: USBDevice): Promise<FT232H> {
 		const { interfaceNumber, epIn, epOut } = await FT232H.#discoverEndpoints(device)
@@ -45,7 +47,10 @@ export class FT232H {
 		this.#endpointBulkIn = epIn
 		this.#endpointBulkOut = epOut
 		this.#interfaceNumber = interfaceNumber
+		this.#mpsse = new MPSSE(this)
 	}
+
+	get mpsse(): MPSSE { return this.#mpsse }
 
 	static async #discoverEndpoints(device: USBDevice): Promise<{ interfaceNumber: number, epIn: number, epOut: number}> {
 		if (device.configuration === null) {

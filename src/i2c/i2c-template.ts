@@ -1,5 +1,10 @@
 /** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
 import {
+	CLOCK_BASE_12,
+	CLOCK_BASE_60,
+	Clock
+} from '../mpsse/clock.ts'
+import {
 	CLOCK_DIVISOR_COMMANDS,
 	FT232H_ONLY_COMMANDS,
 	H_COMMANDS,
@@ -21,15 +26,24 @@ const SDA_DIRECTION_OUT = 0b0000_0010
 const SCL_DIRECTION_OUT = 0b0000_0001
 const SDA_SCL_DIRECTION_OUT: number = SDA_DIRECTION_OUT | SCL_DIRECTION_OUT
 
+const OPEN_DRAIN_LOW_PIN_MASK = 0b0000_0111
+const OPEN_DRAIN_HIGH_PIN_MASK = 0b0000_0000
 
 export class I2CTemplate {
-	static initI2C(): Uint8Array<ArrayBuffer> {
+	static initI2C(targetHertz: number, enableClockDivideBy5 = false): Uint8Array<ArrayBuffer> {
+		const clockBase = enableClockDivideBy5 ? CLOCK_BASE_12 : CLOCK_BASE_60
+		const divideBy5Command = enableClockDivideBy5 ? H_COMMANDS.ENABLE_CLOCK_DIVIDE_BY_FIVE : H_COMMANDS.DISABLE_CLOCK_DIVIDE_BY_FIVE
+
+		const divisor = Clock.clockDivisor(targetHertz, clockBase)
+		const divisorH = (divisor >> 8) & 0xFF
+		const divisorL = divisor & 0xFF
+
 		return Uint8Array.from([
-			H_COMMANDS.DISABLE_CLOCK_DIVIDE_BY_FIVE,
+			divideBy5Command,
 			H_COMMANDS.ENABLE_THREE_PHASE_CLOCKING,
-			FT232H_ONLY_COMMANDS.SET_IO_ONLY_DRIVE_LOW, 0b0000_0111, 0x00, // low pins as open-drain
+			FT232H_ONLY_COMMANDS.SET_IO_ONLY_DRIVE_LOW, OPEN_DRAIN_LOW_PIN_MASK, OPEN_DRAIN_HIGH_PIN_MASK, // low pins as open-drain
 			PIN_STATE_COMMANDS.SET_DATA_BITS_LOW_BYTE, SCL_HIGH_SDA_HIGH, SDA_SCL_DIRECTION_OUT, // value, direction
-			CLOCK_DIVISOR_COMMANDS.SET_CLK_DIVISOR, 0x4A, 0x01, // ~100kHz
+			CLOCK_DIVISOR_COMMANDS.SET_CLK_DIVISOR, divisorL, divisorH, // 0x4A, 0x01, // ~100kHz
 
 			HOST_AND_MPSSE_MODE_COMMANDS.SEND_IMMEDIATE
 		])
