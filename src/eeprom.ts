@@ -30,7 +30,6 @@ export const CONFIG_SUSPEND_PULL_DOWN = 0b0000_0100
 export const CONFIG_USE_SERIAL = 0b0000_1000
 export const CONFIG_USE_USB_VERSION = 0b0001_0000
 
-
 export const CHANNEL_TYPE: Record<number, string> = {
 	0: 'UART',
 	1: 'FIFO',
@@ -44,6 +43,38 @@ export const GROUP_DRIVE: Record<number, GroupDriveInfo> = {
 	1: { name: '8mA', mA: 8 },
 	2: { name: '12mA', mA: 12 },
 	3: { name: '16mA', mA: 16 }
+}
+
+export const CBUS_FUNC_NAME_H: Record<number, string> = {
+	0: 'TRISTATE',
+	1: 'TXLED',
+	2: 'RXLED',
+	3: 'TXRXLED',
+	4: 'PWREN',
+	5: 'SLEEP',
+	6: 'DRIVE0',
+	7: 'DRIVE1',
+	8: 'GPIO',
+	9: 'TXDEN',
+	10: 'CLK30',
+	11: 'CLK15',
+	12: 'CLK7_5'
+}
+
+export const CBUS_FUNC_NAME_R: Record<number, string> = {
+	0: 'TXDEN',
+	1: 'PWREN',
+	2: 'RXLED',
+	3: 'TXLED',
+	4: 'TX+RXLED',
+	5: 'SLEEP',
+	6: 'CLK48',
+	7: 'CLK24',
+	8: 'CLK12',
+	9: 'CLK6',
+	10: 'IOMODE',
+	11: 'BB_WR',
+	12: 'BB_RD"'
 }
 
 export const GROUP_DRIVE_MASK = 0b0000_0011
@@ -176,7 +207,6 @@ export interface EEPROMInfo232R {
 }
 
 export type ChipSpecificInfo = EEPROMInfo2232H | EEPROMInfo232H | EEPROMInfo232R | undefined
-
 
 export function eepromTypeOffset(chipInfo: ChipInfo): number|undefined {
 	// if(chipInfo.major === USB_MAJOR_TYPE_2232C) { return 10 }// 2232C  0x14 -> 10
@@ -347,22 +377,6 @@ export class FTDIEEPROM {
 		const FT1284_FLOW_CONTROL_MASK = 0b0000_0100
 		const POWER_SAVE_DISABLE_H_MASK = 0b0000_1000
 
-		const CBUS_FUNC_NAME_H: Record<number, string> = {
-			0: 'TRISTATE',
-			1: 'TXLED',
-			2: 'RXLED',
-			3: 'TXRXLED',
-			4: 'PWREN',
-			5: 'SLEEP',
-			6: 'DRIVE0',
-			7: 'DRIVE1',
-			8: 'GPIO',
-			9: 'TXDEN',
-			10: 'CLK30',
-			11: 'CLK15',
-			12: 'CLK7_5'
-		}
-
 		const control = u16[0]
 		const groupConfig = u16[6]
 
@@ -463,23 +477,6 @@ export class FTDIEEPROM {
 		const INVERT_DCD_MASK = 0b0100_0000
 		const INVERT_RI_MASK  = 0b1000_0000
 
-
-		const CBUS_FUNC_NAME_R: Record<number, string> = {
-			0: 'TXDEN',
-			1: 'PWREN',
-			2: 'RXLED',
-			3: 'TXLED',
-			4: 'TX+RXLED',
-			5: 'SLEEP',
-			6: 'CLK48',
-			7: 'CLK24',
-			8: 'CLK12',
-			9: 'CLK6',
-			10: 'IOMODE',
-			11: 'BB_WR',
-			12: 'BB_RD"'
-		}
-
 		const control = u16[0]
 		const config = u16[5]
 
@@ -543,7 +540,6 @@ export class FTDIEEPROM {
 		if(chipInfo.major === USB_MAJOR_TYPE_2232H) { return FTDIEEPROM.parseEEPROM_FT2232H(buffer, chipInfo) }
 		if(chipInfo.major === USB_MAJOR_TYPE_232H) { return FTDIEEPROM.parseEEPROM_232H(buffer, chipInfo) }
 
-
 		return undefined
 	}
 
@@ -558,6 +554,7 @@ export class FTDIEEPROM {
 
 		usedChipInfo.eepromSize = chipInfo.eepromSize ?? u16.length
 		console.log('using eepromSize16', usedChipInfo.eepromSize)
+		console.log('with u16 array length', u16.length)
 
 		const checksumCalculated = FTDIEEPROM.calculateChecksum(u16, usedChipInfo.eepromSize)
 		const checksum = u16[usedChipInfo.eepromSize - 1]
