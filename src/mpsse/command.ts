@@ -1,3 +1,5 @@
+export const BAD_COMMAND = 0xAF // suggested bad command
+export const BAD_COMMAND_RESPONSE = 0xFA // first response byte when any bad command sent
 
 // Shifting commands IN MPSSE Mode
 export const SHIFT_COMMANDS_DEFINITION = {
@@ -73,18 +75,18 @@ export const CLOCK_DIVISOR_COMMANDS = {
 	SET_CLK_DIVISOR: 0x86
 }
 
+export const HOST_AND_MPSSE_MODE_COMMANDS = {
+	SEND_IMMEDIATE: 0x87,
+	// WAIT_IO_HIGH: 0x88,
+	// WAIT_IO_LOW: 0x89
+}
+
 // export const HOST_EMULATION_MODE_COMMANDS = {
 // 	READ_SHORT_ADDRESS: 0x90,
 // 	READ_EXTENDED_ADDRESS: 0x91,
 // 	WRITE_SHORT_ADDRESS: 0x92,
 // 	WRITE_EXTENDED_ADDRESS: 0x93
 // }
-
-export const HOST_AND_MPSSE_MODE_COMMANDS = {
-	SEND_IMMEDIATE: 0x87,
-	// WAIT_IO_HIGH: 0x88,
-	// WAIT_IO_LOW: 0x89
-}
 
 export const H_COMMANDS = {
 	DISABLE_CLOCK_DIVIDE_BY_FIVE: 0x8A,

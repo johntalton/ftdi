@@ -10,7 +10,7 @@ import {
 
 
 export class MPSSETemplate {
-		static shiftOutByte(command: ShiftCommand, length: number, data: number): Array<number> {
+	static shiftOutByte(command: ShiftCommand, length: number, data: number): Array<number> {
 		const lengthL = (length - 1) & 0x0F
 		const lengthH = ((length - 1) & 0xF0) >> 8
 		return [ command, lengthL, lengthH, data ]

@@ -1,5 +1,7 @@
 /** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
 import type { FT232H } from '../ft232h.ts'
+import { Util } from '../util.ts'
+import { BAD_COMMAND, BAD_COMMAND_RESPONSE } from './command.ts'
 import { MPSSETemplate } from './mpsse-template.ts'
 
 export class MPSSE {
@@ -15,6 +17,16 @@ export class MPSSE {
 		await this.#device.sendData(Uint8Array.from(flatCmdList))
 	}
 
+	async validateMPSSE(command = BAD_COMMAND): Promise<boolean> {
+		await this.executeCommands(command)
+		const response = await Util.pollData(this.#device).catch(() => undefined)
+
+		if(response === undefined) { return false }
+		const [ first, second ] = response
+		if(first !== BAD_COMMAND_RESPONSE) { return false }
+		if(second !== command) { return false }
+		return true
+	}
 
 	async setGpioHigh(pins: number, directions: number): Promise<void> {
 		const command = MPSSETemplate.gpioSetHigh(pins, directions)
