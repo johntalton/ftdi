@@ -1,6 +1,6 @@
 {
-  "name": "@johntalton/ft232h",
-  "version": "1.0.1",
+  "name": "@johntalton/ftdi",
+  "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -17,11 +17,14 @@
     "src/**/*.ts"
   ],
   "repository": {
-    "url": "git+https://github.com/johntalton/ft232h.git"
+    "url": "git+https://github.com/johntalton/ftdi.git"
   },
   "scripts": {
     "build": "tsc -p .",
-    "build:watch": "tsc -p . -w"
+    "build:watch": "tsc -p . -w",
+    "lint": "biome check",
+    "test": "node --test test/**/*.test.js",
+    "coverage": "c8 --src src --check-coverage --statements 95 --branches 95 --functions 95 --lines 95 -r lcovonly -r text node --test test/**/*.test.js"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",
