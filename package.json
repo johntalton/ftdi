@@ -3,6 +3,10 @@
   "version": "1.1.1",
   "type": "module",
   "license": "MIT",
+  "keywords": [
+    "FTDI", "I²C", "FT232H", "EEPROM", "GPIO", "MPSSE",
+    "WebUSB", "USB"
+  ],
   "exports": {
     ".": "./lib/index.js",
     "./i2c": "./lib/i2c/index.js",
