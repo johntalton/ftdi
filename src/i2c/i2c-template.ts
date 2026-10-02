@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import {
 	CLOCK_BASE_12,
 	CLOCK_BASE_60,

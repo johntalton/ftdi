@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/style/noNestedTernary: preserve const assign */
 /** biome-ignore-all lint/performance/noAwaitInLoops: simplify impl */
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import type {
 	I2CAddress,
 	I2CBufferSource,

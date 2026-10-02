@@ -1,8 +1,8 @@
-/** biome-ignore-all lint/performance/noAwaitInLoops: <explanation> */
-/** biome-ignore-all lint/nursery/noMisleadingReturnType: <explanation> */
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
-/** biome-ignore-all lint/style/noExcessiveLinesPerFile: <explanation> */
-/** biome-ignore-all lint/style/useDestructuring: <explanation> */
+/** biome-ignore-all lint/performance/noAwaitInLoops: simplifies code */
+/** biome-ignore-all lint/nursery/noMisleadingReturnType: false positive */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
+/** biome-ignore-all lint/style/noExcessiveLinesPerFile: parser for all chips */
+/** biome-ignore-all lint/style/useDestructuring: explicity word index for array */
 import type { FTDIDevice } from './ftdi.ts'
 import {
 	type ChipInfo,
@@ -126,7 +126,7 @@ export interface EEPROMInfo {
 		selfPowered: boolean
 		remoteWake: boolean
 		maxPower: number
-	},
+	}
 
 	chipConfig: {
 		isInIsochronous: boolean
@@ -134,7 +134,7 @@ export interface EEPROMInfo {
 		suspendPullDowns: boolean
 		useSerial: boolean
 		useUSBVersion: boolean
-	},
+	}
 
 	manufacture: string|undefined
 	product: string|undefined
@@ -181,7 +181,7 @@ export interface EEPROMInfo232H {
 	flowcontrol: boolean
 	powersave: boolean
 
-	group: [ GroupItem, GroupItem ],
+	group: [ GroupItem, GroupItem ]
 
 	cbusFunction: Array<string|undefined>
 
@@ -543,6 +543,7 @@ export class FTDIEEPROM {
 		return undefined
 	}
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: does heavy lifting
 	static parseEEPROM(buffer: ArrayBufferView<ArrayBuffer|ArrayBuffer>, chipInfo: ChipInfo): EEPROMInfo|undefined {
 		const u16 = ArrayBuffer.isView(buffer) ?
 			new Uint16Array(buffer.buffer, buffer.byteOffset) :

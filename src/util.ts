@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/performance/noAwaitInLoops: <explanation> */
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
+/** biome-ignore-all lint/performance/noAwaitInLoops: simplifies code */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import type { FTDIDevice } from "./ftdi.ts"
 import { STATUS_PREFIX_LENGTH } from "./status.ts"
 

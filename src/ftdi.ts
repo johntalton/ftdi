@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/noNestedTernary: <explanation> */
+/** biome-ignore-all lint/style/noNestedTernary: makes code better */
 import type { BitMode, ModemControl, RequestType } from './consts.ts'
 import { REQUESTS, RESET_USB } from './consts.ts'
 import { MPSSE } from './mpsse/mpsse.ts'

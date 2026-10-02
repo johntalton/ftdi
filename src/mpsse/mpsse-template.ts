@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import {
 	CLOCK_DIVISOR_COMMANDS,
 	FT232H_ONLY_COMMANDS,
@@ -54,9 +54,9 @@ export class MPSSETemplate {
 		return [ PIN_STATE_COMMANDS.READ_DATA_BITS_LOW_BYTE ]
 	}
 
-	static setClockDivisor(divider: number): Array<number> {
-		const divisorL = divider & 0xFF
-		const divisorH = (divider >> 8) & 0xFF
+	static setClockDivisor(divisor: number): Array<number> {
+		const divisorL = divisor & 0xFF
+		const divisorH = (divisor >> 8) & 0xFF
 
 		return [
 			CLOCK_DIVISOR_COMMANDS.SET_CLK_DIVISOR,

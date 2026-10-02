@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/useConsistentArrayType: <explanation> */
+/** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import type { FTDIDevice } from '../ftdi.ts'
 import { Util } from '../util.ts'
 import { BAD_COMMAND, BAD_COMMAND_RESPONSE } from './command.ts'
@@ -49,8 +49,8 @@ export class MPSSE {
 	}
 
 
-	async setClockDivisor(divider: number): Promise<void> {
-		const command = MPSSETemplate.setClockDivisor(divider)
+	async setClockDivisor(divisor: number): Promise<void> {
+		const command = MPSSETemplate.setClockDivisor(divisor)
 		return this.executeCommands(command)
 	}
 
