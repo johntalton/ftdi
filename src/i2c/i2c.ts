@@ -40,9 +40,6 @@ export async function readData(device: FTDIDevice, length: number, targetBuffer?
 			new Uint8Array(targetBuffer.buffer, targetBuffer.byteOffset, length) :
 			new Uint8Array(targetBuffer, 0, length))
 
-	// c0 low - RX-LED-emulation
-	// await device.mpsse.setGpioHigh(0b0000_0000, 0b0000_0001)
-
 	for(let offset = 0; offset < length; offset += 1) {
 		const ack = offset + 1 < length // is last byte
 
@@ -52,9 +49,6 @@ export async function readData(device: FTDIDevice, length: number, targetBuffer?
 
 		buffer.set(new Uint8Array(byteReadResponse.buffer, byteReadResponse.byteOffset, 1), offset)
 	}
-
-	// c0 high - RX-LED-emulation
-	// await device.mpsse.setGpioHigh(0b0000_0001, 0b0000_0001)
 
 	return buffer
 }
@@ -121,9 +115,18 @@ export class FT232HBus implements I2CBus {
 		return result
 	}
 
-	// biome-ignore lint/nursery/useThisInClassMethods: no impl
-	async sendByte(_address: I2CAddress, _byteValue: number): Promise<void> {
-		throw new Error('Method not implemented.')
+	async sendByte(address: I2CAddress, byteValue: number): Promise<void> {
+
+		//
+		const startAck = await sendAndReadACK(this.#device, I2CTemplate.startWithAddress(address, true))
+		if(!startAck) { throw new Error('start with address nack') }
+
+		//
+		const writeAck = await sendAndReadACK(this.#device, I2CTemplate.writeByte(byteValue))
+		if(!writeAck) { throw new Error('write data nack') }
+
+		//
+		await this.#device.sendData(I2CTemplate.stop())
 	}
 
 	async readI2cBlock(address: I2CAddress, cmd: I2CCommand, length: number, targetBuffer?: I2CBufferSource): Promise<I2CReadResult> {
