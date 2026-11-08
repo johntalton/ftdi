@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/performance/noAwaitInLoops: simplifies code */
 /** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
 import type { FTDIDevice } from './ftdi.ts'
-import { DeviceStatus, STATUS_PREFIX_LENGTH } from './status.ts'
+import { STATUS_PREFIX_LENGTH } from './status.ts'
 
 export interface ChipInfo {
 	major: number
