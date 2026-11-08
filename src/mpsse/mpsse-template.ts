@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
+/** biome-ignore-all lint/nursery/noMisleadingReturnType: false-positive */
 import {
 	CLOCK_DIVISOR_COMMANDS,
 	FT232H_ONLY_COMMANDS,
@@ -11,23 +12,39 @@ import {
 
 export class MPSSETemplate {
 	static shiftOutByte(command: ShiftCommand, length: number, data: number): Array<number> {
-		const lengthL = (length - 1) & 0x0F
-		const lengthH = ((length - 1) & 0xF0) >> 8
+		if(length <= 0) { throw new RangeError('can not read zero length') }
+		const lengthMinusOne = length - 1
+		const lengthL = lengthMinusOne & 0xFF
+		const lengthH = (lengthMinusOne >> 8) & 0xFF
 		return [ command, lengthL, lengthH, data ]
 	}
 
+	static shiftOutBytes(command: ShiftCommand, length: number, data: Array<number>): Array<number> {
+		if(length <= 0) { throw new RangeError('can not read zero length') }
+		const lengthMinusOne = length - 1
+		const lengthL = lengthMinusOne & 0xFF
+		const lengthH = (lengthMinusOne >> 8) & 0xFF
+		return [ command, lengthL, lengthH, ...data ]
+	}
+
 	static shiftInByte(command: ShiftCommand, length: number): Array<number> {
-		const lengthL = (length - 1) & 0x0F
-		const lengthH = ((length - 1) & 0xF0) >> 8
+		if(length <= 0) { throw new RangeError('can not read zero length') }
+		const lengthMinusOne = length - 1
+		const lengthL = lengthMinusOne & 0xFF
+		const lengthH = (lengthMinusOne >> 8) & 0xFF
 		return [ command, lengthL, lengthH ]
 	}
 
 	static shiftOutBits(command: ShiftCommand, length: number, data: number): Array<number> {
-		return [ command, length - 1, data ]
+		if(length <= 0) { throw new RangeError('can not read zero length') }
+		const lengthMinusOne = length - 1
+		return [ command, lengthMinusOne, data ]
 	}
 
 	static shiftInBits(command: ShiftCommand, length: number): Array<number> {
-		return [ command, length - 1 ]
+		if(length <= 0) { throw new RangeError('can not read zero length') }
+		const lengthMinusOne = length - 1
+		return [ command, lengthMinusOne ]
 	}
 
 	static gpioSetHigh(pins: number, directions: number): Array<number> {

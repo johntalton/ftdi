@@ -112,16 +112,16 @@ export class FTDIDevice {
 	}
 
 	async getModemStatus(): Promise<DeviceStatusInfo|undefined> {
-		const status = await this.#requestIn(REQUESTS.POLL_MODEM_STATUS, STATUS_PREFIX_LENGTH)
-		if(status.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
-		if(status.data === undefined) { throw new Error('undefined data') }
-		assertDataViewNotShared(status.data)
-		return DeviceStatus.parse(status.data)
+		const result = await this.#requestIn(REQUESTS.POLL_MODEM_STATUS, STATUS_PREFIX_LENGTH)
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
+		if(result.data === undefined) { throw new Error('undefined data') }
+		assertDataViewNotShared(result.data)
+		return DeviceStatus.parse(result.data)
 	}
 
 	async getLatencyTimer(): Promise<number> {
 		const result = await this.#requestIn(REQUESTS.GET_LATENCY_TIMER, 1)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 		if(result.data === undefined) { throw new Error('undefined data') }
 
 		const latency = result.data.getUint8(0)
@@ -133,12 +133,12 @@ export class FTDIDevice {
 		if(latency < 0 || latency > 255) { throw new RangeError('latency out of range') }
 
 		const result = await this.#requestOut(REQUESTS.SET_LATENCY_TIMER, latency)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 	}
 
 	async readPins(): Promise<number> {
 		const result = await this.#requestIn(REQUESTS.READ_PINS, 1)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 		if(result.data === undefined) { throw new Error('undefined data') }
 		return result.data.getUint8(0)
 	}
@@ -157,7 +157,7 @@ export class FTDIDevice {
 		const value = dtrValue | rtsValue
 
 		const result = await this.#requestOut(REQUESTS.SET_MODEM_CTRL, value)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 	}
 
 	async setEventChar(data: number, enable = true): Promise<void> {
@@ -166,7 +166,7 @@ export class FTDIDevice {
 		const value = enable ? ENABLE_BIT | data : data
 
 		const result = await this.#requestOut(REQUESTS.SET_EVENT_CHAR, value)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 	}
 
 	async setErrorChar(data: number, enable = true): Promise<void> {
@@ -175,20 +175,19 @@ export class FTDIDevice {
 		const value = enable ? ENABLE_BIT | data : data
 
 		const result = await this.#requestOut(REQUESTS.SET_ERROR_CHAR, value)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('status not ok') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status: ${result.status}`) }
 
 	}
 
-
   async sendData(data: BufferSource): Promise<number> {
     const result = await this.#device.transferOut(this.#endpointBulkOut, data)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure sending data') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status sending data: ${result.status}`) }
 		return result.bytesWritten
   }
 
 	async readData(length: number): Promise<DataView<ArrayBuffer>> {
 		const result = await this.#device.transferIn(this.#endpointBulkIn, length)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure to read data') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status reading data: ${result.status}`) }
 		if(result.data === undefined) { throw new Error('result data undefined') }
 		assertDataViewNotShared(result.data)
 		return result.data
@@ -196,7 +195,7 @@ export class FTDIDevice {
 
 	async readEEPROM(address: number, length: number): Promise<DataView<ArrayBuffer>> {
 		const result = await this.#requestIn(REQUESTS.READ_EEPROM, length, address)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure to read eeprom') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status reading eeprom: ${result.status}`) }
 		if(result.data === undefined) { throw new Error('result data undefined') }
 		assertDataViewNotShared(result.data)
 
@@ -205,7 +204,7 @@ export class FTDIDevice {
 
 	async writeEEPROM(address: number, value: number): Promise<number> {
 		const result = await this.#requestOut(REQUESTS.WRITE_EEPROM, value, address)
-		if(result.status !== USB_TRANSFER_OK) { throw new Error('failure to read eeprom') }
+		if(result.status !== USB_TRANSFER_OK) { throw new Error(`unexpected status writing eeprom: ${result.status}`) }
 		return result.bytesWritten
 	}
 

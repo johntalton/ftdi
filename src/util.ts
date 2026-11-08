@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/performance/noAwaitInLoops: simplifies code */
 /** biome-ignore-all lint/style/useConsistentArrayType: miss-classified */
-import type { FTDIDevice } from "./ftdi.ts"
-import { STATUS_PREFIX_LENGTH } from "./status.ts"
+import type { FTDIDevice } from './ftdi.ts'
+import { DeviceStatus, STATUS_PREFIX_LENGTH } from './status.ts'
 
 export interface ChipInfo {
 	major: number
@@ -57,14 +57,15 @@ export class Util {
 		return info
 	}
 
-	static async pollData(device: FTDIDevice, attempts = DEFAULT_MAX_POLL_ATTEMPTS): Promise<Uint8Array<ArrayBuffer>> {
+	static async pollData(device: FTDIDevice, length = DEFAULT_DATA_READ_SIZE, attempts = DEFAULT_MAX_POLL_ATTEMPTS): Promise<Uint8Array<ArrayBuffer>> {
+		// console.log('pollData', length)
 		for(let i = 0; i < attempts; i += 1) {
-			const response = await device.readData(DEFAULT_DATA_READ_SIZE)
-			if(response.byteLength === STATUS_PREFIX_LENGTH) { continue }
+			const response = await device.readData(STATUS_PREFIX_LENGTH + length)
 			if(response === undefined) { throw new Error('no response') }
+			if(response.byteLength === STATUS_PREFIX_LENGTH) { continue }
 			// const status = DeviceStatus.parse(response)
-			// console.log('attempts', i)
-			return new Uint8Array(response.buffer, STATUS_PREFIX_LENGTH)
+			// console.log('attempts', i, status)
+			return new Uint8Array(response.buffer, response.byteOffset + STATUS_PREFIX_LENGTH)
 		}
 
 		throw new Error('no valid data acquired')

@@ -93,8 +93,8 @@ export class FT232HBus implements I2CBus {
 		this.#device = device
 	}
 
-	// biome-ignore lint/nursery/useThisInClassMethods: close is a noop
-	close(): void {
+	// biome-ignore lint/style/useThisInClassMethods: close is a noop
+		close(): void {
 		// noop
 	}
 

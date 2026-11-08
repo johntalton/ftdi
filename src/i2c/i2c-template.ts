@@ -14,20 +14,37 @@ import {
 } from '../mpsse/command.ts'
 import { MPSSETemplate } from '../mpsse/mpsse-template.ts'
 
-const SDA_PIN_MASK = 0b0000_0010
-const SCL_PIN_MASK = 0b0000_0001
+export const SCL_PIN_MASK = 0b0000_0001 // D0
+export const SDA_PIN_MASK = 0b0000_0010 // D1
+export const TX_PIN_MASK = 0b0010_0000 // D5
+export const RX_PIN_MASK = 0b0100_0000 // D6
 
-const SCL_HIGH_SDA_HIGH: number = SDA_PIN_MASK | SCL_PIN_MASK
-const SCL_HIGH_SDA_LOW: number = SCL_PIN_MASK
-const SCL_LOW_SDA_HIGH: number = SDA_PIN_MASK
-const SCL_LOW_SDA_LOW = 0
 
-const SDA_DIRECTION_OUT = 0b0000_0010
-const SCL_DIRECTION_OUT = 0b0000_0001
-const SDA_SCL_DIRECTION_OUT: number = SDA_DIRECTION_OUT | SCL_DIRECTION_OUT
 
-const OPEN_DRAIN_LOW_PIN_MASK = 0b0000_0111
-const OPEN_DRAIN_HIGH_PIN_MASK = 0b0000_0000
+export const TX_LOW_RX_LOW = 0
+export const TX_LOW_RX_HIGH: number = RX_PIN_MASK
+export const TX_HIGH_RX_LOW: number = TX_PIN_MASK
+export const TX_HIGH_RX_HIGH: number = RX_PIN_MASK | TX_PIN_MASK
+
+
+export const SCL_HIGH_SDA_HIGH: number = SDA_PIN_MASK | SCL_PIN_MASK | TX_HIGH_RX_HIGH
+export const SCL_HIGH_SDA_LOW: number = SCL_PIN_MASK | TX_HIGH_RX_HIGH
+export const SCL_LOW_SDA_HIGH: number = SDA_PIN_MASK | TX_HIGH_RX_HIGH
+export const SCL_LOW_SDA_LOW: number = 0 | TX_HIGH_RX_HIGH
+
+// export const SCL_LOW_SDA_HIGH_RX: number = SDA_PIN_MASK | TX_HIGH_RX_LOW
+// export const SCL_LOW_SDA_HIGH_TX: number = SDA_PIN_MASK | TX_LOW_RX_HIGH
+
+
+
+
+export const SDA_DIRECTION_OUT = 0b0000_0010
+export const SCL_DIRECTION_OUT = 0b0000_0001
+export const RX_TX_DIRECTION = 0b0110_0000
+export const SDA_SCL_DIRECTION_OUT: number = SDA_DIRECTION_OUT | SCL_DIRECTION_OUT | RX_TX_DIRECTION
+
+export const OPEN_DRAIN_LOW_PIN_MASK = 0b0110_0111
+export const OPEN_DRAIN_HIGH_PIN_MASK = 0b0000_0000
 
 export class I2CTemplate {
 	static initI2C(targetHertz: number, enableClockDivideBy5 = false): Uint8Array<ArrayBuffer> {
@@ -98,7 +115,9 @@ export class I2CTemplate {
 
 	static writeByte(data: number): Uint8Array<ArrayBuffer> {
 		return Uint8Array.from([
+			// ...MPSSETemplate.gpioSetLow(SCL_LOW_SDA_HIGH_TX, SDA_SCL_DIRECTION_OUT),
 			...MPSSETemplate.shiftOutByte(SHIFT_COMMAND.OUT_MSB_BYTES_NEGATIVE_VE, 1, data),
+			// ...MPSSETemplate.gpioSetLow(SCL_LOW_SDA_LOW, SDA_SCL_DIRECTION_OUT),
 			...I2CTemplate.#consumeAck(),
 			HOST_AND_MPSSE_MODE_COMMANDS.SEND_IMMEDIATE
 		])
@@ -116,7 +135,7 @@ export class I2CTemplate {
 		])
 	}
 
-	static readData(ack = true): Uint8Array<ArrayBuffer> {
+	static readData(ack: boolean): Uint8Array<ArrayBuffer> {
 		const MSB_ACK_BIT = 0x00
 		const MSB_NACK_BIT = 0x80
 		const data = ack ? MSB_ACK_BIT : MSB_NACK_BIT

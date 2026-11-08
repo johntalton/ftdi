@@ -74,7 +74,7 @@ export const CBUS_FUNC_NAME_R: Record<number, string> = {
 	9: 'CLK6',
 	10: 'IOMODE',
 	11: 'BB_WR',
-	12: 'BB_RD"'
+	12: 'BB_RD'
 }
 
 export const GROUP_DRIVE_MASK = 0b0000_0011
