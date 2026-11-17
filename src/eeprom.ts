@@ -546,7 +546,7 @@ export class FTDIEEPROM {
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: does heavy lifting
 	static parseEEPROM(buffer: ArrayBufferView<ArrayBuffer|ArrayBuffer>, chipInfo: ChipInfo): EEPROMInfo|undefined {
 		const u16 = ArrayBuffer.isView(buffer) ?
-			new Uint16Array(buffer.buffer, buffer.byteOffset) :
+			new Uint16Array(buffer.buffer, buffer.byteOffset) : // todo buffer.byteLength
 			new Uint16Array(buffer)
 
 		// cache the chip info as it will be updated

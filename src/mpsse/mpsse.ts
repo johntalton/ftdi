@@ -59,6 +59,11 @@ export class MPSSE {
 	// async waitIOLow(): Promise<void> {
 	// }
 
+	async enableLoopback(enable = true): Promise<void> {
+		const command = MPSSETemplate.enableLoopback(enable)
+		return this.executeCommands(command)
+	}
+
 	async enableClockDivideBy5(enable = true): Promise<void> {
 		const command = MPSSETemplate.enableClockDivideBy5(enable)
 		return this.executeCommands(command)

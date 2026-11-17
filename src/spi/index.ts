@@ -74,6 +74,7 @@ export class FTDISPIBus implements SPIBus {
 
 		const totalBytesWritten = await this.#device.sendData(Uint8Array.from([
 			// preamble to set state
+			...MPSSETemplate.setDriveOnlyZero(0b0000_1000, 0b0000_0000),
 			H_COMMANDS.DISABLE_CLOCK_DIVIDE_BY_FIVE,
 			...MPSSETemplate.setClockDivisor(divisor),
 			H_COMMANDS.DISABLE_THREE_PHASE_CLOCKING,
